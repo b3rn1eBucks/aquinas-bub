@@ -1,46 +1,483 @@
 
-<!doctype html>
-<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>Aquinas Bub | Watercolor World v3</title>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Aquinas Bub's Monastery | Version 4</title>
 <style>
-*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;font-family:Georgia,serif;background:#b7e3f5}button{cursor:pointer}#view{position:fixed;inset:0;overflow:hidden;touch-action:none;cursor:grab;user-select:none}#view.drag{cursor:grabbing}#sky{position:absolute;inset:0;background:linear-gradient(#7dc9ee 0%,#b6e6f6 48%,#f5f0ce 100%)}.layer{position:absolute;inset:0;pointer-events:none;overflow:visible;will-change:transform}.art{position:absolute;max-width:none;pointer-events:none;object-fit:contain;transform-origin:center bottom}.top-art{transform-origin:center top}.world{position:absolute;left:0;top:0;height:100%;pointer-events:none}.meadow{position:absolute;top:77%;height:30%;width:100%;background:linear-gradient(180deg,#91bd70 0%,#80aa5e 55%,#6b9855 100%);clip-path:polygon(0 17%,3% 13%,7% 19%,12% 9%,17% 14%,23% 5%,29% 15%,35% 8%,40% 17%,46% 7%,53% 14%,60% 5%,66% 14%,73% 8%,80% 16%,86% 7%,93% 14%,100% 8%,100% 100%,0 100%)}.walk{position:absolute;top:82%;height:9%;background:#ecdab6;border-top:4px solid #f9ebcc;border-bottom:5px solid #b8a47e;box-shadow:0 5px 9px #526b4433;border-radius:45% 45% 30% 30%/25% 25% 20% 20%}.walk:after{content:"";position:absolute;inset:3px 0;background:repeating-linear-gradient(99deg,transparent 0 80px,#ac9a7a55 82px 85px,transparent 87px 160px)}.water{position:absolute;top:96%;height:14%;background:linear-gradient(#b7e4e5,#6fb8c6);border-top:5px solid #adc69a}.water:after{content:"";position:absolute;inset:0;background:repeating-linear-gradient(100deg,transparent 0 85px,#ffffff80 90px 94px,transparent 99px 190px)}.site{position:absolute;width:210px;height:170px;transform:translate(-50%,-100%);text-align:center}.house{position:absolute;bottom:0;left:15%;width:70%;height:63%;background:#f2dcb3;border:4px solid #917960;border-radius:5px;box-shadow:8px 9px 0 #344b3b33}.roof{position:absolute;left:5%;bottom:61%;width:90%;height:30%;background:#b77765;clip-path:polygon(50% 0,100% 95%,0 95%)}.door{position:absolute;bottom:0;left:40%;width:21%;height:42%;background:#856148;border:3px solid #684932;border-radius:25px 25px 0 0}.win{position:absolute;top:26%;width:17%;height:22%;background:#9fd5df;border:3px solid #79644d;border-radius:14px 14px 3px 3px}.win.one{left:13%}.win.two{right:13%}.garden{position:absolute;bottom:0;left:3%;width:94%;height:55%;border:7px solid #ab9169;border-radius:20px;background:repeating-linear-gradient(90deg,#699c4c 0 22px,#afd27a 22px 32px,#86664d 32px 41px)}.label{position:absolute;left:50%;bottom:-32px;transform:translateX(-50%);white-space:nowrap;background:#fff8e9ee;border:1px solid #c8b68e;border-radius:20px;padding:5px 9px;font:12px system-ui;color:#514332}.wheel{position:absolute;top:88%;width:86px;height:86px;border:11px dashed #815c3c;border-radius:50%;box-shadow:inset 0 0 0 7px #c09464;animation:spin 17s linear infinite}@keyframes spin{to{transform:rotate(360deg)}}.hud{position:fixed;z-index:50;left:12px;top:calc(12px + env(safe-area-inset-top));background:#fff9e9e9;border:1px solid #d7c7a6;border-radius:14px;padding:10px 13px;max-width:min(410px,calc(100vw - 24px));color:#4a473c;box-shadow:0 5px 20px #0002}.hud strong{font-size:16px}.hud small{display:block;font:12px/1.45 system-ui;margin-top:4px}.controls{position:fixed;z-index:51;right:12px;bottom:calc(15px + env(safe-area-inset-bottom));display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}.controls button,.panel button{border:1px solid #b8a784;border-radius:18px;background:#fff9eb;color:#4c4639;padding:10px 12px;font:600 13px system-ui}.progress{position:fixed;z-index:55;bottom:0;left:0;width:100%;height:5px;background:#e5ddc7}.progress i{display:block;height:100%;width:0;background:#698c64}.panel{position:fixed;z-index:70;inset:8% 5% 10%;background:#fffdf5;border:2px solid #c5b18c;border-radius:15px;box-shadow:0 12px 65px #0006;display:none;flex-direction:column;overflow:hidden;font:13px/1.5 system-ui;color:#353026}.panel.open{display:flex}.panel header{display:flex;justify-content:space-between;align-items:center;gap:10px;background:#eee7d6;padding:10px 15px}.panel main{padding:14px;overflow:auto}.panel pre{font:12px/1.5 ui-monospace,monospace;white-space:pre-wrap;overflow-wrap:anywhere}.panel p{color:#6a5a42}.hidden{display:none!important}
-</style></head><body>
-<div id="view"><div id="sky"></div></div>
-<div class="hud"><strong>✦ Aquinas Bub's Monastery</strong><small>Swipe to explore the watercolor world · Version 3</small><small id="status">Loading scenery…</small></div>
-<div class="controls"><button id="left">◀</button><button id="right">▶</button><button id="labels">Hide labels</button><button id="debug">Debug Images</button></div><div class="progress"><i id="bar"></i></div>
-<div class="panel" id="panel"><header><strong>Image debug report</strong><button id="close">Close ✕</button></header><main><p>Failures are grouped by actual filename, not by repeated placements.</p><pre id="report"></pre><button id="copy">Copy report</button></main></div>
+*{box-sizing:border-box}
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#a6daf0;font-family:Georgia,serif}
+button{cursor:pointer}
+#view{position:fixed;inset:0;overflow:hidden;touch-action:none;cursor:grab;user-select:none;background:linear-gradient(#7fc8ee 0%,#c5e9f5 56%,#f5efd4 100%)}
+#view.dragging{cursor:grabbing}
+.layer{position:absolute;inset:0;pointer-events:none;overflow:visible;will-change:transform}
+.art{position:absolute;display:block;max-width:none;width:auto;object-fit:contain;pointer-events:none;transform-origin:center bottom}
+.art.top{transform-origin:center top}
+.world{position:absolute;top:0;left:0;height:100%;pointer-events:none}
+.ground{position:absolute;top:78%;height:30%;background:linear-gradient(#a7ca81,#81aa64 60%,#70985a);clip-path:polygon(0 13%,4% 9%,9% 14%,15% 7%,22% 12%,29% 6%,36% 14%,44% 8%,51% 15%,59% 7%,66% 13%,74% 6%,81% 14%,90% 8%,100% 12%,100% 100%,0 100%)}
+.path{position:absolute;top:83%;height:7%;background:#e8d5ac;border-top:3px solid #fff0cf;border-bottom:4px solid #b6a17a;clip-path:polygon(0 16%,5% 3%,12% 15%,19% 0,27% 12%,35% 2%,44% 15%,53% 1%,62% 12%,71% 0,80% 13%,89% 3%,100% 15%,100% 91%,90% 100%,81% 87%,72% 100%,63% 90%,54% 100%,45% 88%,36% 100%,27% 89%,18% 100%,9% 88%,0 100%)}
+.path:after{content:"";position:absolute;inset:0;background:repeating-linear-gradient(97deg,transparent 0 95px,#aa977644 97px 100px,transparent 103px 190px)}
+.stream{position:absolute;top:96%;height:14%;background:linear-gradient(#c2e8e6,#75bcca);border-top:5px solid #a9c49b}
+.stream:after{content:"";position:absolute;inset:0;background:repeating-linear-gradient(105deg,transparent 0 90px,#fff9 95px 100px,transparent 106px 200px)}
+.station{position:absolute;width:220px;height:175px;transform:translate(-50%,-100%);text-align:center}
+.house{position:absolute;left:15%;bottom:0;width:70%;height:65%;background:#f0dcb6;border:5px solid #91785f;border-radius:5px;box-shadow:8px 8px 0 #334b3d28}
+.roof{position:absolute;left:5%;bottom:62%;width:90%;height:30%;background:#b77c6b;clip-path:polygon(50% 0,100% 96%,0 96%)}
+.door{position:absolute;left:39%;bottom:0;width:23%;height:43%;background:#846046;border:3px solid #6b4c36;border-radius:25px 25px 0 0}
+.window{position:absolute;top:28%;width:18%;height:23%;background:#a4d8e0;border:3px solid #806a52;border-radius:14px 14px 3px 3px}
+.window.a{left:13%}.window.b{right:13%}
+.garden{position:absolute;bottom:0;left:3%;width:94%;height:55%;background:repeating-linear-gradient(90deg,#719c4e 0 22px,#b0d27d 23px 33px,#8a684b 34px 43px);border:8px solid #a68d65;border-radius:24px}
+.name{position:absolute;bottom:-32px;left:50%;transform:translateX(-50%);white-space:nowrap;background:#fff9ebee;border:1px solid #c8b58c;border-radius:20px;padding:6px 11px;font:12px system-ui;color:#4d4435}
+.wheel{position:absolute;top:88%;width:86px;height:86px;border:11px dashed #7c5839;border-radius:50%;box-shadow:inset 0 0 0 7px #c1925f;animation:spin 17s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.hud{position:fixed;z-index:90;top:calc(12px + env(safe-area-inset-top));left:12px;max-width:min(440px,calc(100vw - 24px));padding:11px 14px;border:1px solid #d3c5a7;border-radius:14px;background:#fff9e9eb;color:#4c463a;box-shadow:0 5px 20px #0002}
+.hud strong{font-size:16px}.hud small{display:block;font:12px/1.45 system-ui;margin-top:4px}
+.controls{position:fixed;z-index:91;bottom:calc(16px + env(safe-area-inset-bottom));right:12px;display:flex;gap:7px;flex-wrap:wrap;justify-content:flex-end}
+.controls button,.debug button{background:#fff9e9;border:1px solid #b9a887;border-radius:20px;padding:10px 13px;font:600 13px system-ui;color:#4b4538}
+.progress{position:fixed;bottom:0;left:0;width:100%;height:5px;background:#e4dcc6;z-index:95}
+.progress i{display:block;width:0;height:100%;background:#698e65}
+.debug{position:fixed;z-index:110;inset:8% 5% 10%;display:none;flex-direction:column;background:#fffdf6;border:2px solid #c8b58e;border-radius:16px;box-shadow:0 12px 65px #0006;font:13px/1.5 system-ui;color:#353027;overflow:hidden}
+.debug.open{display:flex}
+.debug header{padding:12px 15px;background:#eee7d6;display:flex;justify-content:space-between;align-items:center;gap:12px}
+.debug main{padding:15px;overflow:auto}
+.debug pre{white-space:pre-wrap;overflow-wrap:anywhere;font:12px/1.6 ui-monospace,monospace}
+.hide{display:none!important}
+</style>
+</head>
+<body>
+<div id="view"></div>
+
+<div class="hud">
+<strong>✦ Aquinas Bub's Monastery</strong>
+<small>Version 4 · Swipe sideways through the watercolor world</small>
+<small id="status">Loading artwork…</small>
+</div>
+
+<div class="controls">
+<button id="left">◀</button>
+<button id="right">▶</button>
+<button id="labels">Hide labels</button>
+<button id="debugBtn">Debug Images</button>
+</div>
+
+<div class="progress"><i id="bar"></i></div>
+
+<div class="debug" id="debugPanel">
+<header><strong>Image Debug Report</strong><button id="closeDebug">Close ✕</button></header>
+<main><p>Missing files are grouped by filename. Repeated placements are counted separately.</p><pre id="debugText"></pre><button id="copyDebug">Copy report</button></main>
+</div>
+
 <script>
-(()=>{'use strict';
-const view=document.getElementById('view'),bar=document.getElementById('bar'),status=document.getElementById('status');const WORLD=11200;let width=innerWidth,height=innerHeight,pos=0,goal=0,down=false,last=0,loaded=0,failed=0,pending=0;const missing=new Map(),ok=new Set();
-const specs=[['cloud',.09],['far',.18],['mid',.30],['hills',.46],['wood',.76],['terrain',1],['buildings',1],['flowers',1.12],['trunks',1.32],['branches',1.43]];const layers={};for(const [name,speed] of specs){let d=document.createElement('div');d.className='layer';d.dataset.speed=speed;view.appendChild(d);layers[name]=d}
-function statusUpdate(){status.textContent=loaded+' loaded · '+failed+' failed · '+pending+' checking';if(document.getElementById('panel').classList.contains('open'))debugReport()}
-function img(layer,folder,name,x,opts={}){let el=document.createElement('img');el.className='art'+(opts.top?' top-art':'');el.alt='';el.decoding='async';el.loading='eager';el.style.left=x+'px';if(opts.top)el.style.top=(opts.offset||0)+'px';else el.style.bottom=(opts.offset||0)+'px';el.style.height=(opts.h||200)+'px';el.style.width='auto';el.style.opacity=opts.opacity??1;el.style.transform='translateX('+(opts.anchor||0)+'%) scaleX('+(opts.flip?-1:1)+')';if(opts.blur)el.style.filter='blur('+opts.blur+'px)';layers[layer].appendChild(el);
-const key='assets/'+folder+'/'+name,ext=['PNG','png','WEBP','webp'];let i=0,finished=false;pending++;el.onload=()=>{if(finished)return;finished=true;pending--;loaded++;ok.add(key);statusUpdate()};el.onerror=()=>{if(finished)return;i++;if(i<ext.length){el.src=key+'.'+ext[i];return}finished=true;pending--;failed++;missing.set(key,(missing.get(key)||0)+1);el.remove();statusUpdate()};el.src=key+'.'+ext[0];return el}
-const H=()=>height;
-// Scenery height and vertical anchoring are based on the screen, not fixed image widths.
-for(let i=0;i<17;i++)img('cloud','clouds','clouds-0'+(i%5+1),i*700-220,{top:true,offset:H()*.12+(i%4)*H()*.075,h:H()*(.14+(i%3)*.035),opacity:.72,flip:i%3===1});
-for(let i=0;i<14;i++)img('far','mountains','mountains-far-0'+(i%3+1),i*840-350,{offset:H()*.37,h:H()*.47,opacity:.72,flip:i%4===2});
-for(let i=0;i<14;i++)img('mid','mountains','mountains-mid-0'+(i%3+1),i*820-270,{offset:H()*.29,h:H()*.49,opacity:.85,flip:i%3===1});
-for(let i=0;i<17;i++)img('hills','hills','hills-0'+(i%4+1),i*710-250,{offset:H()*.19,h:H()*.47,flip:i%4===2});
-// Midground trees are deliberately above the distant scenery, but behind paths/buildings.
-for(let i=0;i<20;i++)img('wood','trees','trees-0'+(i%6+1),i*555-170,{offset:H()*.19,h:H()*(.34+(i%4)*.055),flip:i%3===0});
-function div(parent,cls,style){let d=document.createElement('div');d.className=cls;Object.assign(d.style,style);parent.appendChild(d);return d}
-let terrain=div(layers.terrain,'world',{width:WORLD+'px'}),built=div(layers.buildings,'world',{width:WORLD+'px'});
-// The old hard-edged green band is gone; only a low, irregular meadow remains.
-div(terrain,'meadow',{width:WORLD+'px'});div(terrain,'walk',{left:'0',width:WORLD+'px'});div(terrain,'water',{left:'0',width:WORLD+'px'});
-function station(title,x,garden=false,rise=0){let s=div(built,'site',{left:x+'px',top:(79-rise)+'%'});if(garden){div(s,'garden',{})}else{let h=div(s,'house',{});div(s,'roof',{});div(h,'door',{});div(h,'win one',{});div(h,'win two',{})}let label=div(s,'label',{});label.textContent=title}
-station('Elevated vegetable garden',570,true,9);station('Art studio',1600);station('Library',2580);station('Study workshop',3530);station('Cloister courtyard',4690);station('Marian grotto',5810,true,3);station('Kitchen',6810);station('Refectory',7860);station('Tree chapel',9110);station('Marketplace',10460);div(built,'wheel',{left:'800px'});
-// Foreground plants are tall enough to reach into the scene, anchored below the viewport.
-for(let i=0;i<30;i++)img('flowers','foreground','flowers-'+String(i%10+1).padStart(2,'0'),i*395-150,{offset:-H()*.07+(i%4)*H()*.015,h:H()*(.29+(i%5)*.055),flip:i%3===0});
-// Trunks are deliberately enormous: a near-camera tree often exits the top of the screen.
-for(let i=0;i<13;i++)img('trunks','foreground','trunk-0'+(i%4+1),i*900-150,{offset:-H()*.12,h:H()*(1.12+(i%3)*.22),flip:i%2===1,anchor:i%2===0?-16:0});
-// Overhead branches are TOP-anchored. Their stems begin outside the upper edge.
-for(let i=0;i<9;i++)img('branches','foreground','branches-0'+(i%4+1),i*1370-190,{top:true,offset:-H()*(.18+(i%3)*.035),h:H()*(.43+(i%3)*.12),flip:i%2===1});
-function limit(){return Math.max(0,WORLD-width)}function move(dx){goal=Math.max(0,Math.min(limit(),goal+dx))}
-function frame(){pos+=(goal-pos)*.16;if(Math.abs(pos-goal)<.1)pos=goal;for(const [name,speed] of specs){if(name==='terrain'){terrain.style.transform='translate3d('+(-pos)+'px,0,0)'}else if(name==='buildings'){built.style.transform='translate3d('+(-pos)+'px,0,0)'}else layers[name].style.transform='translate3d('+(-pos*speed)+'px,0,0)'}bar.style.width=(limit()?pos/limit()*100:0)+'%';requestAnimationFrame(frame)}requestAnimationFrame(frame);
-view.addEventListener('wheel',e=>{e.preventDefault();move((Math.abs(e.deltaX)>Math.abs(e.deltaY)?e.deltaX:e.deltaY)*1.3)},{passive:false});view.addEventListener('pointerdown',e=>{down=true;last=e.clientX;view.classList.add('drag');view.setPointerCapture(e.pointerId)});view.addEventListener('pointermove',e=>{if(down){move((last-e.clientX)*1.4);last=e.clientX}});function release(){down=false;view.classList.remove('drag')}view.addEventListener('pointerup',release);view.addEventListener('pointercancel',release);
-document.getElementById('left').onclick=()=>move(-width*.8);document.getElementById('right').onclick=()=>move(width*.8);let show=true;document.getElementById('labels').onclick=()=>{show=!show;document.querySelectorAll('.label').forEach(el=>el.classList.toggle('hidden',!show));document.getElementById('labels').textContent=show?'Hide labels':'Show labels'};
-function textReport(){return ['Aquinas Bub v3 image report','Loaded placements: '+loaded,'Failed placements: '+failed,'Checking: '+pending,'Unique loaded files: '+ok.size,'Unique missing paths: '+missing.size,'',...([...missing].sort((a,b)=>a[0].localeCompare(b[0])).map(([path,n])=>path+'.PNG ('+n+' placements)'))].join('\n')}
-function debugReport(){document.getElementById('report').textContent=textReport()}document.getElementById('debug').onclick=()=>{document.getElementById('panel').classList.add('open');debugReport()};document.getElementById('close').onclick=()=>document.getElementById('panel').classList.remove('open');document.getElementById('copy').onclick=()=>{let t=textReport();if(navigator.clipboard?.writeText)navigator.clipboard.writeText(t).catch(()=>prompt('Copy:',t));else prompt('Copy:',t)};
-document.addEventListener('keydown',e=>{if(e.key==='ArrowRight')move(250);if(e.key==='ArrowLeft')move(-250)});addEventListener('resize',()=>{width=innerWidth;height=innerHeight;goal=Math.min(goal,limit())});statusUpdate();
+(()=>{
+"use strict";
+
+const view=document.getElementById("view");
+const status=document.getElementById("status");
+const bar=document.getElementById("bar");
+
+const WORLD=12000;
+let vw=innerWidth,vh=innerHeight;
+let position=0,target=0,dragging=false,lastX=0;
+let loaded=0,failed=0,pending=0;
+const missing=new Map(),successful=new Set();
+
+const speeds={
+cloud:.08,
+far:.18,
+mid:.31,
+hills:.47,
+wood:.72,
+terrain:1,
+buildings:1,
+flowers:1.17,
+trunks:1.42,
+branches:1.52
+};
+
+const layers={};
+
+for(const [name,speed] of Object.entries(speeds)){
+const layer=document.createElement("div");
+layer.className="layer";
+layer.dataset.speed=speed;
+view.appendChild(layer);
+layers[name]=layer;
+}
+
+function make(parent,cls,styles={}){
+const el=document.createElement("div");
+el.className=cls;
+Object.assign(el.style,styles);
+parent.appendChild(el);
+return el;
+}
+
+function image(layer,folder,file,x,options={}){
+const el=document.createElement("img");
+el.className="art"+(options.top?" top":"");
+el.alt="";
+el.decoding="async";
+el.loading="eager";
+el.style.left=x+"px";
+el.style.height=(options.height||200)+"px";
+el.style.width="auto";
+el.style.opacity=options.opacity??1;
+
+if(options.top)el.style.top=(options.offset||0)+"px";
+else el.style.bottom=(options.offset||0)+"px";
+
+el.style.transform="translateX("+(options.anchor||0)+"%) scaleX("+(options.flip?-1:1)+")";
+if(options.blur)el.style.filter="blur("+options.blur+"px)";
+
+layers[layer].appendChild(el);
+
+const base="assets/"+folder+"/"+file;
+const extensions=["PNG","png","WEBP","webp"];
+let attempt=0,done=false;
+pending++;
+
+el.onload=()=>{
+if(done)return;
+done=true;
+pending--;
+loaded++;
+successful.add(base);
+updateStatus();
+};
+
+el.onerror=()=>{
+if(done)return;
+attempt++;
+if(attempt<extensions.length){
+el.src=base+"."+extensions[attempt];
+return;
+}
+done=true;
+pending--;
+failed++;
+missing.set(base,(missing.get(base)||0)+1);
+el.remove();
+updateStatus();
+};
+
+el.src=base+"."+extensions[0];
+return el;
+}
+
+function updateStatus(){
+status.textContent=loaded+" loaded · "+failed+" failed · "+pending+" checking";
+if(document.getElementById("debugPanel").classList.contains("open"))showDebug();
+}
+
+const H=vh;
+
+/* CLOUDS: irregular spacing and generous open sky */
+[
+[0,1,120],[580,3,210],[1510,2,145],[2480,5,100],
+[3410,4,205],[4280,1,130],[5190,3,215],
+[6180,2,120],[7130,5,190],[8040,4,110],
+[8990,1,210],[9910,3,145],[11020,2,205]
+].forEach(([x,n,y],i)=>{
+image("cloud","clouds","clouds-0"+n,x,{
+top:true,offset:y/900*H,
+height:H*(.15+(i%3)*.025),
+opacity:.72,flip:i%4===2
+});
+});
+
+/* DISTANT MOUNTAINS */
+for(let i=0;i<15;i++){
+image("far","mountains","mountains-far-0"+(i%3+1),
+i*850-380,{
+offset:H*.37,
+height:H*.48,
+opacity:.74,
+flip:i%5===2
+});
+}
+
+/* MIDDLE MOUNTAINS */
+for(let i=0;i<15;i++){
+image("mid","mountains","mountains-mid-0"+(i%3+1),
+i*830-300,{
+offset:H*.29,
+height:H*.49,
+opacity:.87,
+flip:i%4===1
+});
+}
+
+/* HILLS: alternating heights */
+for(let i=0;i<18;i++){
+image("hills","hills","hills-0"+(i%4+1),
+i*700-280,{
+offset:H*(.18+(i%3)*.012),
+height:H*(.44+(i%3)*.025),
+flip:i%4===2
+});
+}
+
+/* MIDDLE-DISTANCE TREES: arranged in groves */
+const groves=[
+[220,1],[580,3],[920,5],
+[1770,2],[2090,6],
+[2940,4],[3260,1],
+[4250,5],[4560,3],
+[5490,2],[5840,6],
+[6750,1],[7070,4],
+[7950,3],[8300,5],
+[9240,6],[9550,2],
+[10500,4],[10900,1]
+];
+
+groves.forEach(([x,n],i)=>{
+image("wood","trees","trees-0"+n,x,{
+offset:H*.19,
+height:H*(.34+(i%4)*.055),
+flip:i%3===0
+});
+});
+
+/* WALKABLE WORLD */
+const terrain=make(layers.terrain,"world",{width:WORLD+"px"});
+const buildings=make(layers.buildings,"world",{width:WORLD+"px"});
+
+make(terrain,"ground",{width:WORLD+"px"});
+make(terrain,"path",{width:WORLD+"px"});
+make(terrain,"stream",{width:WORLD+"px"});
+
+function station(title,x,garden=false,rise=0){
+const s=make(buildings,"station",{
+left:x+"px",
+top:(79-rise)+"%"
+});
+
+if(garden){
+make(s,"garden");
+}else{
+const house=make(s,"house");
+make(s,"roof");
+make(house,"door");
+make(house,"window a");
+make(house,"window b");
+}
+
+const label=make(s,"name");
+label.textContent=title;
+}
+
+station("Elevated vegetable garden",550,true,9);
+station("Art studio",1580);
+station("Library",2580);
+station("Study workshop",3530);
+station("Cloister courtyard",4700);
+station("Marian grotto",5830,true,3);
+station("Kitchen",6820);
+station("Refectory",7880);
+station("Tree chapel",9160);
+station("Marketplace",10650);
+
+make(buildings,"wheel",{left:"790px"});
+
+/*
+FOREGROUND FLOWERS
+Small groups at deliberate locations, with clear gaps.
+*/
+const flowerGroups=[
+[50,1,0.34],[380,3,0.27],[810,2,0.38],
+[1310,4,0.26],[1860,5,0.31],
+[2410,6,0.25],[2790,7,0.36],
+[3340,8,0.27],[3900,9,0.33],
+[4440,10,0.29],[4990,1,0.31],
+[5570,3,0.38],[6020,5,0.25],
+[6560,7,0.34],[7120,2,0.29],
+[7690,8,0.36],[8230,6,0.26],
+[8790,9,0.34],[9400,4,0.29],
+[9970,10,0.36],[10600,1,0.32],
+[11200,5,0.39],[11800,7,0.28]
+];
+
+flowerGroups.forEach(([x,n,scale],i)=>{
+image("flowers","foreground",
+"flowers-"+String(n).padStart(2,"0"),
+x,{
+offset:-H*.065,
+height:H*scale,
+flip:i%3===1
+});
+});
+
+/*
+NEAR-CAMERA TREES
+Only eight large trunks across the entire journey.
+They are much bigger than the screen and spaced irregularly.
+*/
+const giantTrees=[
+{ x:-260,n:1,h:1.65,flip:false },
+{ x:1900,n:2,h:1.85,flip:true },
+{ x:3420,n:3,h:1.80,flip:false },
+{ x:4850,n:4,h:2.05,flip:true },
+{ x:6940,n:2,h:1.75,flip:false },
+{ x:8470,n:3,h:1.95,flip:true },
+{ x:9750,n:1,h:1.85,flip:false },
+{ x:11400,n:4,h:2.00,flip:true }
+];
+
+giantTrees.forEach((t,i)=>{
+image("trunks","foreground",
+"trunk-0"+t.n,
+t.x,{
+offset:-H*(.18+(i%3)*.035),
+height:H*t.h,
+flip:t.flip,
+anchor:t.flip?-12:-28
+});
+});
+
+/*
+OVERHEAD BRANCHES
+Sparse, large and attached to the top edge.
+*/
+const canopy=[
+{ x:450,n:1,h:.55,flip:false },
+{ x:2780,n:2,h:.60,flip:true },
+{ x:4320,n:3,h:.46,flip:false },
+{ x:6290,n:4,h:.58,flip:true },
+{ x:8770,n:1,h:.53,flip:false },
+{ x:10800,n:4,h:.57,flip:true }
+];
+
+canopy.forEach((t,i)=>{
+image("branches","foreground",
+"branches-0"+t.n,
+t.x,{
+top:true,
+offset:-H*(.19+(i%2)*.05),
+height:H*t.h,
+flip:t.flip
+});
+});
+
+/* SCROLL ENGINE */
+function maxScroll(){
+return Math.max(0,WORLD-vw);
+}
+
+function move(dx){
+target=Math.max(0,Math.min(maxScroll(),target+dx));
+}
+
+function animate(){
+position+=(target-position)*.15;
+if(Math.abs(target-position)<.1)position=target;
+
+for(const [name,speed] of Object.entries(speeds)){
+if(name==="terrain"){
+terrain.style.transform="translate3d("+(-position)+"px,0,0)";
+}else if(name==="buildings"){
+buildings.style.transform="translate3d("+(-position)+"px,0,0)";
+}else{
+layers[name].style.transform="translate3d("+(-position*speed)+"px,0,0)";
+}
+}
+
+bar.style.width=(maxScroll()?position/maxScroll()*100:0)+"%";
+requestAnimationFrame(animate);
+}
+
+requestAnimationFrame(animate);
+
+/* TOUCH AND MOUSE */
+view.addEventListener("pointerdown",e=>{
+dragging=true;
+lastX=e.clientX;
+view.classList.add("dragging");
+view.setPointerCapture(e.pointerId);
+});
+
+view.addEventListener("pointermove",e=>{
+if(!dragging)return;
+move((lastX-e.clientX)*1.4);
+lastX=e.clientX;
+});
+
+function release(){
+dragging=false;
+view.classList.remove("dragging");
+}
+
+view.addEventListener("pointerup",release);
+view.addEventListener("pointercancel",release);
+
+view.addEventListener("wheel",e=>{
+e.preventDefault();
+move((Math.abs(e.deltaX)>Math.abs(e.deltaY)?e.deltaX:e.deltaY)*1.3);
+},{passive:false});
+
+document.getElementById("left").onclick=()=>move(-vw*.8);
+document.getElementById("right").onclick=()=>move(vw*.8);
+
+let labelsVisible=true;
+document.getElementById("labels").onclick=()=>{
+labelsVisible=!labelsVisible;
+document.querySelectorAll(".name").forEach(el=>{
+el.classList.toggle("hide",!labelsVisible);
+});
+document.getElementById("labels").textContent=
+labelsVisible?"Hide labels":"Show labels";
+};
+
+/* IMAGE DEBUGGER */
+function report(){
+return [
+"Aquinas Bub Version 4",
+"Loaded placements: "+loaded,
+"Failed placements: "+failed,
+"Still checking: "+pending,
+"Unique files loaded: "+successful.size,
+"Unique missing paths: "+missing.size,
+"",
+"MISSING FILES:",
+...([...missing].sort((a,b)=>a[0].localeCompare(b[0]))
+.map(([path,count])=>path+".PNG ("+count+" placements)"))
+].join("\n");
+}
+
+function showDebug(){
+document.getElementById("debugText").textContent=report();
+}
+
+document.getElementById("debugBtn").onclick=()=>{
+document.getElementById("debugPanel").classList.add("open");
+showDebug();
+};
+
+document.getElementById("closeDebug").onclick=()=>{
+document.getElementById("debugPanel").classList.remove("open");
+};
+
+document.getElementById("copyDebug").onclick=()=>{
+const text=report();
+if(navigator.clipboard?.writeText){
+navigator.clipboard.writeText(text).catch(()=>prompt("Copy report:",text));
+}else{
+prompt("Copy report:",text);
+}
+};
+
+document.addEventListener("keydown",e=>{
+if(e.key==="ArrowRight")move(300);
+if(e.key==="ArrowLeft")move(-300);
+});
+
+addEventListener("resize",()=>{
+vw=innerWidth;
+vh=innerHeight;
+target=Math.min(target,maxScroll());
+});
+
+updateStatus();
 })();
-</script></body></html>
+</script>
+</body>
+</html>
