@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -7,7 +8,7 @@
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
 
-<title>Aquinas Bub's Monastery | Version 8.5</title>
+<title>Aquinas Bub's Monastery | Version 9</title>
 
 <style>
 *{box-sizing:border-box}
@@ -17,7 +18,6 @@ html,body{
  overflow:hidden;background:#a6daf0;
  font-family:Georgia,serif
 }
-
 button{cursor:pointer}
 
 #view{
@@ -33,7 +33,6 @@ button{cursor:pointer}
  pointer-events:none;overflow:visible;
  will-change:transform
 }
-
 .art{
  position:absolute;display:block;
  max-width:none;width:auto;
@@ -60,7 +59,6 @@ button{cursor:pointer}
  100% 100%,0 100%)
 }
 
-/* GARDEN PATH */
 .path{
  position:absolute;
  top:85%;height:6%;
@@ -136,6 +134,7 @@ button{cursor:pointer}
 }
 .window.a{left:13%}
 .window.b{right:13%}
+
 .garden{
  position:absolute;bottom:0;left:3%;
  width:94%;height:55%;
@@ -146,6 +145,7 @@ button{cursor:pointer}
  border:8px solid #a68d65;
  border-radius:24px
 }
+
 .name{
  position:absolute;bottom:-32px;left:50%;
  transform:translateX(-50%);
@@ -164,6 +164,50 @@ button{cursor:pointer}
  animation:spin 17s linear infinite
 }
 @keyframes spin{to{transform:rotate(360deg)}}
+
+/*
+ VERSION 9 GARDEN
+
+ One garden scene, using the existing
+ six PNG files in assets/garden/.
+
+ The entire garden scrolls at speed 1.
+ Each image uses an independent placement.
+
+ Positions are percentages of the
+ garden scene's bounding box.
+*/
+.garden-scene{
+ position:absolute;
+ width:640px;
+ height:400px;
+ transform:translate(-50%,-100%);
+ pointer-events:none;
+}
+
+.garden-piece{
+ position:absolute;
+ display:block;
+ width:auto;
+ max-width:none;
+ object-fit:contain;
+ pointer-events:none;
+}
+
+.garden-title{
+ position:absolute;
+ left:50%;
+ bottom:-22px;
+ transform:translateX(-50%);
+ white-space:nowrap;
+ background:#fff9ebee;
+ border:1px solid #c8b58c;
+ border-radius:20px;
+ padding:6px 12px;
+ font:12px system-ui;
+ color:#4d4435;
+ z-index:30
+}
 
 /* INTERFACE */
 .hud{
@@ -239,7 +283,7 @@ button{cursor:pointer}
 
 <div class="hud">
  <strong>✦ Aquinas Bub's Monastery</strong>
- <small>Version 8.5 · The Connected Meadow</small>
+ <small>Version 9 · The Elevated Vegetable Garden</small>
  <small id="status">Loading artwork…</small>
 </div>
 
@@ -281,12 +325,6 @@ let loaded=0,failed=0,pending=0;
 const missing=new Map();
 const successful=new Set();
 
-/*
- Version 8.5:
- Additional grassBridge layer connects
- raised bushes to lower meadow.
-*/
-
 const speeds={
  cloud:.08,
  far:.18,
@@ -323,29 +361,11 @@ function make(parent,cls,styles={}){
  return el;
 }
 
-function image(layer,folder,file,x,options={}){
- const el=document.createElement("img");
- el.className="art"+(options.top?" top":"");
- el.alt="";
- el.decoding="async";
- el.loading="eager";
- el.style.left=x+"px";
- el.style.height=(options.height||200)+"px";
- el.style.width="auto";
- el.style.opacity=options.opacity??1;
-
- if(options.top){
-  el.style.top=(options.offset||0)+"px";
- }else{
-  el.style.bottom=(options.offset||0)+"px";
- }
-
- el.style.transform=
- "translateX("+(options.anchor||0)+"%) "+
- "scaleX("+(options.flip?-1:1)+")";
-
- layers[layer].appendChild(el);
-
+/*
+ Shared image loader.
+ Tries PNG, png, WEBP, webp.
+*/
+function loadImage(el,folder,file){
  const base="assets/"+folder+"/"+file;
  const extensions=["PNG","png","WEBP","webp"];
  let attempt=0,done=false;
@@ -375,6 +395,32 @@ function image(layer,folder,file,x,options={}){
 
  el.src=base+"."+extensions[0];
  return el;
+}
+
+function image(layer,folder,file,x,options={}){
+ const el=document.createElement("img");
+ el.className="art"+(options.top?" top":"");
+ el.alt="";
+ el.decoding="async";
+ el.loading="eager";
+ el.style.left=x+"px";
+ el.style.height=(options.height||200)+"px";
+ el.style.width="auto";
+ el.style.opacity=options.opacity??1;
+
+ if(options.top){
+  el.style.top=(options.offset||0)+"px";
+ }else{
+  el.style.bottom=(options.offset||0)+"px";
+ }
+
+ el.style.transform=
+ "translateX("+(options.anchor||0)+"%) "+
+ "scaleX("+(options.flip?-1:1)+")";
+
+ layers[layer].appendChild(el);
+
+ return loadImage(el,folder,file);
 }
 
 function updateStatus(){
@@ -450,7 +496,7 @@ function bushClear(x){
  return buildingX.every(b=>Math.abs(x-b)>300);
 }
 
-/* BUSHES: SAME HEIGHT AS VERSION 8 */
+/* BUSHES */
 const bushLocations=[
  160,310,820,1040,1210,
  1900,2090,2280,
@@ -548,15 +594,7 @@ const terrain=make(
 make(terrain,"ground",{width:WORLD+"px"});
 make(terrain,"stream",{width:WORLD+"px"});
 
-/*
- NEW GRASS BRIDGE
-
- Positioned between the bushes and
- original meadow grass.
-
- Taller, denser, and irregularly
- overlapped to cover the pale strip.
-*/
+/* GRASS BRIDGE */
 const bridgePattern=[
  3,4,1,3,4,3,2,4,3,5,3,4
 ];
@@ -575,13 +613,7 @@ for(let i=0;i<64;i++){
  });
 }
 
-/*
- REAR MEADOW
-
- Raised 45 pixels from Version 8.
- This connects the grasses more
- closely to the bridge layer.
-*/
+/* REAR MEADOW */
 const grassPattern=[3,1,4,3,2,3,1,5,4,3];
 
 for(let i=0;i<55;i++){
@@ -598,13 +630,7 @@ for(let i=0;i<55;i++){
  });
 }
 
-/*
- PATH OVERLAY
-
- Keeping the path above the rear
- grass stops it from disappearing
- beneath the new vegetation.
-*/
+/* PATH OVERLAY */
 const pathWorld=make(
  layers.pathLayer,"world",
  {width:WORLD+"px"}
@@ -636,7 +662,124 @@ function station(title,x,garden=false,rise=0){
  label.textContent=title;
 }
 
-station("Elevated vegetable garden",550,true,9);
+/*
+ VERSION 9: ELEVATED VEGETABLE GARDEN
+
+ This replaces only the old garden
+ placeholder at x = 550.
+
+ Floor is drawn first.
+ Rear fences go behind beds.
+ Four beds form a 2x2 layout.
+ Barrel sits at the outer edge.
+
+ All pieces use their existing
+ original PNG files.
+*/
+
+function addGardenPiece(scene,file,x,y,height,z,flip=false){
+ const el=document.createElement("img");
+ el.className="garden-piece";
+ el.alt="";
+ el.decoding="async";
+ el.loading="eager";
+
+ el.style.left=x+"%";
+ el.style.top=y+"%";
+ el.style.height=height+"%";
+ el.style.transform=
+  "translate(-50%,-50%) scaleX("+
+  (flip?-1:1)+")";
+ el.style.zIndex=z;
+
+ scene.appendChild(el);
+ return loadImage(el,"garden",file);
+}
+
+function buildVegetableGarden(){
+ const scene=make(buildings,"garden-scene",{
+  left:"550px",
+  top:"76%"
+ });
+
+ /*
+  The floor is the foundation.
+  It includes the retaining wall,
+  stairs, paths and Marian shrine.
+ */
+ addGardenPiece(
+  scene,"garden-floor-01",
+  50,54,100,1
+ );
+
+ /*
+  Rear boundary.
+  Fences are placed toward the
+  far edge of the terrace.
+ */
+ addGardenPiece(
+  scene,"garden-fence-01",
+  33,25,24,2
+ );
+
+ addGardenPiece(
+  scene,"garden-fence-02",
+  68,24,24,2
+ );
+
+ /*
+  Side boundary.
+  The reversed fence follows
+  the other terrace angle.
+ */
+ addGardenPiece(
+  scene,"garden-fence-03",
+  86,43,28,3
+ );
+
+ /*
+  Raised planting beds.
+  Rear pair first, front pair
+  afterward, leaving a central
+  path between the four beds.
+ */
+ addGardenPiece(
+  scene,"garden-bed-01",
+  39,43,21,4
+ );
+
+ addGardenPiece(
+  scene,"garden-bed-01",
+  62,43,21,4
+ );
+
+ addGardenPiece(
+  scene,"garden-bed-01",
+  39,61,24,5
+ );
+
+ addGardenPiece(
+  scene,"garden-bed-01",
+  62,61,24,5
+ );
+
+ /*
+  Water barrel.
+  Positioned near the edge,
+  away from the center walkway.
+ */
+ addGardenPiece(
+  scene,"garden-barrel-01",
+  84,61,29,6
+ );
+
+ const title=make(scene,"garden-title");
+ title.textContent="Elevated vegetable garden";
+}
+
+buildVegetableGarden();
+
+/* REMAINING STATIONS */
 station("Art studio",1580);
 station("Library",2580);
 station("Study workshop",3530);
@@ -782,7 +925,8 @@ let labelsVisible=true;
 
 document.getElementById("labels").onclick=()=>{
  labelsVisible=!labelsVisible;
- document.querySelectorAll(".name").forEach(el=>{
+ document.querySelectorAll(".name,.garden-title")
+ .forEach(el=>{
   el.classList.toggle("hide",!labelsVisible);
  });
  document.getElementById("labels").textContent=
@@ -792,7 +936,7 @@ document.getElementById("labels").onclick=()=>{
 /* IMAGE DEBUGGER */
 function report(){
  return [
-  "Aquinas Bub Version 8.5",
+  "Aquinas Bub Version 9",
   "Loaded placements: "+loaded,
   "Failed placements: "+failed,
   "Still checking: "+pending,
