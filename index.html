@@ -261,31 +261,53 @@ offset:-H*.065,height:H*scale,flip:i%3===1
 });
 });
 
+
 /*
-VERSION 5: ONLY FOUR GIANT FOREGROUND TREES.
+VERSION 6: TWO FRAME TREES ONLY.
 
-Their positions are chosen to avoid the main building
-centres at 550, 1580, 2580, 3530, 4700, 5830,
-6820, 7880, 9160 and 10650.
+The first tree is fixed to the left edge of the
+opening screen. The last tree is positioned
+at the right edge of the final screen.
 
-The two entrance trees frame the opening.
-The middle tree sits between the workshop and cloister.
-The final tree frames the far end of the monastery.
+No giant trees appear in the middle.
 */
-const giantTrees=[
-{ x:-360, n:1, h:1.80, flip:false, anchor:-35 },
-{ x:1050, n:3, h:1.85, flip:true, anchor:-15 },
-{ x:4110, n:2, h:1.75, flip:false, anchor:-22 },
-{ x:11650, n:4, h:2.00, flip:true, anchor:-15 }
+
+const giantTrees = [
+  {
+    file: "trunk-01",
+    side: "left",
+    height: 1.75
+  },
+  {
+    file: "trunk-03",
+    side: "right",
+    height: 1.75
+  }
 ];
 
-giantTrees.forEach((t,i)=>{
-image("trunks","foreground","trunk-0"+t.n,t.x,{
-offset:-H*(.19+(i%2)*.025),
-height:H*t.h,
-flip:t.flip,
-anchor:t.anchor
-});
+giantTrees.forEach((tree, i) => {
+
+  const isFirst = i === 0;
+
+  // The final tree's position accounts for
+  // the faster foreground parallax speed.
+  const x = isFirst
+    ? -vh * 0.35
+    : maxScroll() * speeds.trunks + vw - vh * 0.60;
+
+  image(
+    "trunks",
+    "foreground",
+    tree.file,
+    x,
+    {
+      offset: -vh * 0.15,
+      height: vh * tree.height,
+      flip: !isFirst,
+      anchor: 0
+    }
+  );
+
 });
 
 /*
