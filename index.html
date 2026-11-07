@@ -3,376 +3,229 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-
-<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta http-equiv="Cache-Control" content="no-cache,no-store,must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
 
-<title>Aquinas Bub's Monastery | Version 7.5</title>
+<title>Aquinas Bub's Monastery | Version 8</title>
 
 <style>
-* {
-  box-sizing: border-box;
+*{box-sizing:border-box}
+html,body{
+ margin:0;width:100%;height:100%;
+ overflow:hidden;background:#a6daf0;
+ font-family:Georgia,serif
+}
+button{cursor:pointer}
+#view{
+ position:fixed;inset:0;overflow:hidden;
+ touch-action:none;cursor:grab;user-select:none;
+ background:linear-gradient(
+ #7fc8ee 0%,#c5e9f5 56%,#f5efd4 100%)
+}
+#view.dragging{cursor:grabbing}
+.layer{
+ position:absolute;inset:0;
+ pointer-events:none;overflow:visible;
+ will-change:transform
+}
+.art{
+ position:absolute;display:block;
+ max-width:none;width:auto;object-fit:contain;
+ pointer-events:none;
+ transform-origin:center bottom
+}
+.art.top{transform-origin:center top}
+.world{
+ position:absolute;top:0;left:0;
+ height:100%;pointer-events:none
 }
 
-html, body {
-  margin: 0;
-  width: 100%;
-  height: 100%;
-  overflow: hidden;
-  background: #a6daf0;
-  font-family: Georgia, serif;
+/* WATERCOLOUR GROUND */
+.ground{
+ position:absolute;top:78%;height:30%;
+ background:linear-gradient(
+ #b2ce88,#92b96e 50%,#739e62);
+ clip-path:polygon(
+ 0 13%,4% 9%,9% 14%,15% 7%,
+ 22% 12%,29% 6%,36% 14%,44% 8%,
+ 51% 15%,59% 7%,66% 13%,74% 6%,
+ 81% 14%,90% 8%,100% 12%,
+ 100% 100%,0 100%)
 }
 
-button {
-  cursor: pointer;
+/* SOFTER GARDEN PATH */
+.path{
+ position:absolute;
+ top:85%;height:6%;
+ background:linear-gradient(
+ #ead9b3,#dfc99e 65%,#d3bc90);
+ border-top:2px solid #f6e7c6;
+ border-bottom:2px solid #b9a67f;
+ clip-path:polygon(
+ 0 28%,4% 12%,9% 22%,15% 5%,
+ 21% 18%,28% 2%,35% 21%,
+ 42% 8%,49% 23%,56% 4%,
+ 64% 20%,72% 5%,80% 21%,
+ 89% 7%,96% 20%,100% 11%,
+ 100% 88%,94% 100%,86% 87%,
+ 77% 100%,69% 86%,60% 100%,
+ 51% 88%,43% 100%,34% 85%,
+ 25% 100%,17% 87%,8% 100%,0 88%)
+}
+.path:after{
+ content:"";position:absolute;inset:0;
+ background:repeating-linear-gradient(
+ 103deg,transparent 0 125px,
+ #b8a17a25 135px 145px,
+ transparent 155px 270px)
 }
 
-#view {
-  position: fixed;
-  inset: 0;
-  overflow: hidden;
-  touch-action: none;
-  cursor: grab;
-  user-select: none;
-  background: linear-gradient(
-    #7fc8ee 0%,
-    #c5e9f5 56%,
-    #f5efd4 100%
-  );
+/* STREAM */
+.stream{
+ position:absolute;top:96%;height:14%;
+ background:linear-gradient(#c2e8e6,#75bcca);
+ border-top:5px solid #a9c49b
+}
+.stream:after{
+ content:"";position:absolute;inset:0;
+ background:repeating-linear-gradient(
+ 105deg,transparent 0 90px,
+ #ffffff99 95px 100px,
+ transparent 106px 200px)
 }
 
-#view.dragging {
-  cursor: grabbing;
+/* TEMPORARY BUILDINGS */
+.station{
+ position:absolute;width:220px;height:175px;
+ transform:translate(-50%,-100%);
+ text-align:center
 }
-
-.layer {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  overflow: visible;
-  will-change: transform;
+.house{
+ position:absolute;left:15%;bottom:0;
+ width:70%;height:65%;
+ background:#f0dcb6;
+ border:5px solid #91785f;
+ border-radius:5px;
+ box-shadow:8px 8px 0 #334b3d28
 }
-
-.art {
-  position: absolute;
-  display: block;
-  max-width: none;
-  width: auto;
-  object-fit: contain;
-  pointer-events: none;
-  transform-origin: center bottom;
+.roof{
+ position:absolute;left:5%;bottom:62%;
+ width:90%;height:30%;
+ background:#b77c6b;
+ clip-path:polygon(50% 0,100% 96%,0 96%)
 }
-
-.art.top {
-  transform-origin: center top;
+.door{
+ position:absolute;left:39%;bottom:0;
+ width:23%;height:43%;
+ background:#846046;
+ border:3px solid #6b4c36;
+ border-radius:25px 25px 0 0
 }
-
-  
-/* Raise all bushes closer to the hills */
-.layer[data-speed="0.88"] .art,
-.layer[data-speed="0.96"] .art {
-  margin-bottom: 90px;
+.window{
+ position:absolute;top:28%;
+ width:18%;height:23%;
+ background:#a4d8e0;
+ border:3px solid #806a52;
+ border-radius:14px 14px 3px 3px
 }
-
-
-.world {
-  position: absolute;
-  top: 0;
-  left: 0;
-  height: 100%;
-  pointer-events: none;
+.window.a{left:13%}
+.window.b{right:13%}
+.garden{
+ position:absolute;bottom:0;left:3%;
+ width:94%;height:55%;
+ background:repeating-linear-gradient(
+ 90deg,#719c4e 0 22px,
+ #b0d27d 23px 33px,
+ #8a684b 34px 43px);
+ border:8px solid #a68d65;
+ border-radius:24px
 }
-
-.ground {
-  position: absolute;
-  top: 78%;
-  height: 30%;
-  background: linear-gradient(
-    #a7ca81,
-    #81aa64 60%,
-    #70985a
-  );
-  clip-path: polygon(
-    0 13%, 4% 9%, 9% 14%,
-    15% 7%, 22% 12%, 29% 6%,
-    36% 14%, 44% 8%, 51% 15%,
-    59% 7%, 66% 13%, 74% 6%,
-    81% 14%, 90% 8%, 100% 12%,
-    100% 100%, 0 100%
-  );
+.name{
+ position:absolute;bottom:-32px;left:50%;
+ transform:translateX(-50%);
+ white-space:nowrap;
+ background:#fff9ebee;
+ border:1px solid #c8b58c;
+ border-radius:20px;padding:6px 11px;
+ font:12px system-ui;color:#4d4435
 }
-
-.path {
-  position: absolute;
-  top: 83%;
-  height: 7%;
-  background: #e8d5ac;
-  border-top: 3px solid #fff0cf;
-  border-bottom: 4px solid #b6a17a;
-  clip-path: polygon(
-    0 16%, 5% 3%, 12% 15%,
-    19% 0, 27% 12%, 35% 2%,
-    44% 15%, 53% 1%, 62% 12%,
-    71% 0, 80% 13%, 89% 3%,
-    100% 15%, 100% 91%, 90% 100%,
-    81% 87%, 72% 100%, 63% 90%,
-    54% 100%, 45% 88%, 36% 100%,
-    27% 89%, 18% 100%, 9% 88%,
-    0 100%
-  );
+.wheel{
+ position:absolute;top:88%;
+ width:86px;height:86px;
+ border:11px dashed #7c5839;
+ border-radius:50%;
+ box-shadow:inset 0 0 0 7px #c1925f;
+ animation:spin 17s linear infinite
 }
+@keyframes spin{to{transform:rotate(360deg)}}
 
-.path:after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: repeating-linear-gradient(
-    97deg,
-    transparent 0 95px,
-    #aa977644 97px 100px,
-    transparent 103px 190px
-  );
+/* INTERFACE */
+.hud{
+ position:fixed;z-index:90;
+ top:calc(12px + env(safe-area-inset-top));
+ left:12px;
+ max-width:min(440px,calc(100vw - 24px));
+ padding:11px 14px;
+ border:1px solid #d3c5a7;
+ border-radius:14px;
+ background:#fff9e9eb;
+ color:#4c463a;
+ box-shadow:0 5px 20px #0002
 }
-
-.stream {
-  position: absolute;
-  top: 96%;
-  height: 14%;
-  background: linear-gradient(
-    #c2e8e6,
-    #75bcca
-  );
-  border-top: 5px solid #a9c49b;
+.hud strong{font-size:16px}
+.hud small{
+ display:block;font:12px/1.45 system-ui;
+ margin-top:4px
 }
-
-.stream:after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: repeating-linear-gradient(
-    105deg,
-    transparent 0 90px,
-    #fff9 95px 100px,
-    transparent 106px 200px
-  );
+.controls{
+ position:fixed;z-index:91;
+ bottom:calc(16px + env(safe-area-inset-bottom));
+ right:12px;
+ display:flex;gap:7px;
+ flex-wrap:wrap;justify-content:flex-end
 }
-
-.station {
-  position: absolute;
-  width: 220px;
-  height: 175px;
-  transform: translate(-50%, -100%);
-  text-align: center;
+.controls button,.debug button{
+ background:#fff9e9;
+ border:1px solid #b9a887;
+ border-radius:20px;
+ padding:10px 13px;
+ font:600 13px system-ui;
+ color:#4b4538
 }
-
-.house {
-  position: absolute;
-  left: 15%;
-  bottom: 0;
-  width: 70%;
-  height: 65%;
-  background: #f0dcb6;
-  border: 5px solid #91785f;
-  border-radius: 5px;
-  box-shadow: 8px 8px 0 #334b3d28;
+.progress{
+ position:fixed;bottom:0;left:0;
+ width:100%;height:5px;
+ background:#e4dcc6;z-index:95
 }
-
-.roof {
-  position: absolute;
-  left: 5%;
-  bottom: 62%;
-  width: 90%;
-  height: 30%;
-  background: #b77c6b;
-  clip-path: polygon(
-    50% 0,
-    100% 96%,
-    0 96%
-  );
+.progress i{
+ display:block;width:0;height:100%;
+ background:#698e65
 }
-
-.door {
-  position: absolute;
-  left: 39%;
-  bottom: 0;
-  width: 23%;
-  height: 43%;
-  background: #846046;
-  border: 3px solid #6b4c36;
-  border-radius: 25px 25px 0 0;
+.debug{
+ position:fixed;z-index:110;
+ inset:8% 5% 10%;
+ display:none;flex-direction:column;
+ background:#fffdf6;
+ border:2px solid #c8b58e;
+ border-radius:16px;
+ box-shadow:0 12px 65px #0006;
+ font:13px/1.5 system-ui;
+ color:#353027;overflow:hidden
 }
-
-.window {
-  position: absolute;
-  top: 28%;
-  width: 18%;
-  height: 23%;
-  background: #a4d8e0;
-  border: 3px solid #806a52;
-  border-radius: 14px 14px 3px 3px;
+.debug.open{display:flex}
+.debug header{
+ padding:12px 15px;background:#eee7d6;
+ display:flex;justify-content:space-between;
+ align-items:center;gap:12px
 }
-
-.window.a {
-  left: 13%;
+.debug main{padding:15px;overflow:auto}
+.debug pre{
+ white-space:pre-wrap;overflow-wrap:anywhere;
+ font:12px/1.6 ui-monospace,monospace
 }
-
-.window.b {
-  right: 13%;
-}
-
-.garden {
-  position: absolute;
-  bottom: 0;
-  left: 3%;
-  width: 94%;
-  height: 55%;
-  background: repeating-linear-gradient(
-    90deg,
-    #719c4e 0 22px,
-    #b0d27d 23px 33px,
-    #8a684b 34px 43px
-  );
-  border: 8px solid #a68d65;
-  border-radius: 24px;
-}
-
-.name {
-  position: absolute;
-  bottom: -32px;
-  left: 50%;
-  transform: translateX(-50%);
-  white-space: nowrap;
-  background: #fff9ebee;
-  border: 1px solid #c8b58c;
-  border-radius: 20px;
-  padding: 6px 11px;
-  font: 12px system-ui;
-  color: #4d4435;
-}
-
-.wheel {
-  position: absolute;
-  top: 88%;
-  width: 86px;
-  height: 86px;
-  border: 11px dashed #7c5839;
-  border-radius: 50%;
-  box-shadow: inset 0 0 0 7px #c1925f;
-  animation: spin 17s linear infinite;
-}
-
-@keyframes spin {
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-.hud {
-  position: fixed;
-  z-index: 90;
-  top: calc(12px + env(safe-area-inset-top));
-  left: 12px;
-  max-width: min(440px, calc(100vw - 24px));
-  padding: 11px 14px;
-  border: 1px solid #d3c5a7;
-  border-radius: 14px;
-  background: #fff9e9eb;
-  color: #4c463a;
-  box-shadow: 0 5px 20px #0002;
-}
-
-.hud strong {
-  font-size: 16px;
-}
-
-.hud small {
-  display: block;
-  font: 12px/1.45 system-ui;
-  margin-top: 4px;
-}
-
-.controls {
-  position: fixed;
-  z-index: 91;
-  bottom: calc(16px + env(safe-area-inset-bottom));
-  right: 12px;
-  display: flex;
-  gap: 7px;
-  flex-wrap: wrap;
-  justify-content: flex-end;
-}
-
-.controls button,
-.debug button {
-  background: #fff9e9;
-  border: 1px solid #b9a887;
-  border-radius: 20px;
-  padding: 10px 13px;
-  font: 600 13px system-ui;
-  color: #4b4538;
-}
-
-.progress {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  width: 100%;
-  height: 5px;
-  background: #e4dcc6;
-  z-index: 95;
-}
-
-.progress i {
-  display: block;
-  width: 0;
-  height: 100%;
-  background: #698e65;
-}
-
-.debug {
-  position: fixed;
-  z-index: 110;
-  inset: 8% 5% 10%;
-  display: none;
-  flex-direction: column;
-  background: #fffdf6;
-  border: 2px solid #c8b58e;
-  border-radius: 16px;
-  box-shadow: 0 12px 65px #0006;
-  font: 13px/1.5 system-ui;
-  color: #353027;
-  overflow: hidden;
-}
-
-.debug.open {
-  display: flex;
-}
-
-.debug header {
-  padding: 12px 15px;
-  background: #eee7d6;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 12px;
-}
-
-.debug main {
-  padding: 15px;
-  overflow: auto;
-}
-
-.debug pre {
-  white-space: pre-wrap;
-  overflow-wrap: anywhere;
-  font: 12px/1.6 ui-monospace, monospace;
-}
-
-.hide {
-  display: none !important;
-}
+.hide{display:none!important}
 </style>
 </head>
 
@@ -381,611 +234,582 @@ button {
 <div id="view"></div>
 
 <div class="hud">
-  <strong>✦ Aquinas Bub's Monastery</strong>
-  <small>Version 7.5 · The Watercolor Gardens</small>
-  <small id="status">Loading artwork…</small>
+ <strong>✦ Aquinas Bub's Monastery</strong>
+ <small>Version 8 · The Living Meadow</small>
+ <small id="status">Loading artwork…</small>
 </div>
 
 <div class="controls">
-  <button id="left">◀</button>
-  <button id="right">▶</button>
-  <button id="labels">Hide labels</button>
-  <button id="debugBtn">Debug Images</button>
+ <button id="left">◀</button>
+ <button id="right">▶</button>
+ <button id="labels">Hide labels</button>
+ <button id="debugBtn">Debug Images</button>
 </div>
 
-<div class="progress">
-  <i id="bar"></i>
-</div>
+<div class="progress"><i id="bar"></i></div>
 
 <div class="debug" id="debugPanel">
-  <header>
-    <strong>Image Debug Report</strong>
-    <button id="closeDebug">Close ✕</button>
-  </header>
-  <main>
-    <p>Missing files are grouped by filename.</p>
-    <pre id="debugText"></pre>
-    <button id="copyDebug">Copy report</button>
-  </main>
+ <header>
+  <strong>Image Debug Report</strong>
+  <button id="closeDebug">Close ✕</button>
+ </header>
+ <main>
+  <p>Missing files are grouped by filename.</p>
+  <pre id="debugText"></pre>
+  <button id="copyDebug">Copy report</button>
+ </main>
 </div>
 
 <script>
-(() => {
+(()=>{
 "use strict";
 
-const view = document.getElementById("view");
-const status = document.getElementById("status");
-const bar = document.getElementById("bar");
+const view=document.getElementById("view");
+const status=document.getElementById("status");
+const bar=document.getElementById("bar");
 
-const WORLD = 12000;
+const WORLD=12000;
+let vw=innerWidth,vh=innerHeight;
+let position=0,target=0;
+let dragging=false,lastX=0;
+let loaded=0,failed=0,pending=0;
 
-let vw = innerWidth;
-let vh = innerHeight;
-let position = 0;
-let target = 0;
-let dragging = false;
-let lastX = 0;
+const missing=new Map();
+const successful=new Set();
 
-let loaded = 0;
-let failed = 0;
-let pending = 0;
-
-const missing = new Map();
-const successful = new Set();
-
-const speeds = {
-  cloud: 0.08,
-  far: 0.18,
-  mid: 0.31,
-  hills: 0.47,
-  bushesBack: 0.88,
-  bushesFront: 0.96,
-  terrain: 1,
-  buildings: 1,
-  flowers: 1.17,
-  trunks: 1.42,
-  branches: 1.52
+const speeds={
+ cloud:.08,
+ far:.18,
+ mid:.31,
+ hills:.47,
+ bushesBack:.88,
+ bushesFront:.96,
+ terrain:1,
+ grassBack:1,
+ buildings:1,
+ grassFront:1.055,
+ flowers:1.17,
+ trunks:1.42,
+ branches:1.52
 };
 
-const layers = {};
+const layers={};
 
-for (const [name, speed] of Object.entries(speeds)) {
-  const layer = document.createElement("div");
-  layer.className = "layer";
-  layer.dataset.speed = speed;
-  view.appendChild(layer);
-  layers[name] = layer;
+for(const [name,speed] of Object.entries(speeds)){
+ const layer=document.createElement("div");
+ layer.className="layer";
+ layer.dataset.speed=speed;
+ view.appendChild(layer);
+ layers[name]=layer;
 }
 
-function make(parent, cls, styles = {}) {
-  const el = document.createElement("div");
-  el.className = cls;
-  Object.assign(el.style, styles);
-  parent.appendChild(el);
-  return el;
+function make(parent,cls,styles={}){
+ const el=document.createElement("div");
+ el.className=cls;
+ Object.assign(el.style,styles);
+ parent.appendChild(el);
+ return el;
 }
 
-function image(layer, folder, file, x, options = {}) {
-  const el = document.createElement("img");
+function image(layer,folder,file,x,options={}){
+ const el=document.createElement("img");
+ el.className="art"+(options.top?" top":"");
+ el.alt="";
+ el.decoding="async";
+ el.loading="eager";
+ el.style.left=x+"px";
+ el.style.height=(options.height||200)+"px";
+ el.style.width="auto";
+ el.style.opacity=options.opacity??1;
 
-  el.className = "art" + (options.top ? " top" : "");
-  el.alt = "";
-  el.decoding = "async";
-  el.loading = "eager";
+ if(options.top){
+  el.style.top=(options.offset||0)+"px";
+ }else{
+  el.style.bottom=(options.offset||0)+"px";
+ }
 
-  el.style.left = x + "px";
-  el.style.height = (options.height || 200) + "px";
-  el.style.width = "auto";
-  el.style.opacity = options.opacity ?? 1;
+ el.style.transform=
+ "translateX("+(options.anchor||0)+"%) "+
+ "scaleX("+(options.flip?-1:1)+")";
 
-  if (options.top) {
-    el.style.top = (options.offset || 0) + "px";
-  } else {
-    el.style.bottom = (options.offset || 0) + "px";
+ layers[layer].appendChild(el);
+
+ const base="assets/"+folder+"/"+file;
+ const extensions=["PNG","png","WEBP","webp"];
+ let attempt=0,done=false;
+ pending++;
+
+ el.onload=()=>{
+  if(done)return;
+  done=true;
+  pending--;loaded++;
+  successful.add(base);
+  updateStatus();
+ };
+
+ el.onerror=()=>{
+  if(done)return;
+  attempt++;
+  if(attempt<extensions.length){
+   el.src=base+"."+extensions[attempt];
+   return;
   }
+  done=true;
+  pending--;failed++;
+  missing.set(base,(missing.get(base)||0)+1);
+  el.remove();
+  updateStatus();
+ };
 
-  el.style.transform =
-    "translateX(" + (options.anchor || 0) + "%) " +
-    "scaleX(" + (options.flip ? -1 : 1) + ")";
-
-  layers[layer].appendChild(el);
-
-  const base = "assets/" + folder + "/" + file;
-  const extensions = ["PNG", "png", "WEBP", "webp"];
-
-  let attempt = 0;
-  let done = false;
-
-  pending++;
-
-  el.onload = () => {
-    if (done) return;
-    done = true;
-    pending--;
-    loaded++;
-    successful.add(base);
-    updateStatus();
-  };
-
-  el.onerror = () => {
-    if (done) return;
-    attempt++;
-
-    if (attempt < extensions.length) {
-      el.src = base + "." + extensions[attempt];
-      return;
-    }
-
-    done = true;
-    pending--;
-    failed++;
-
-    missing.set(
-      base,
-      (missing.get(base) || 0) + 1
-    );
-
-    el.remove();
-    updateStatus();
-  };
-
-  el.src = base + "." + extensions[0];
-  return el;
+ el.src=base+"."+extensions[0];
+ return el;
 }
 
-function updateStatus() {
-  status.textContent =
-    loaded + " loaded · " +
-    failed + " failed · " +
-    pending + " checking";
+function updateStatus(){
+ status.textContent=
+ loaded+" loaded · "+
+ failed+" failed · "+
+ pending+" checking";
 
-  if (
-    document.getElementById("debugPanel")
-      .classList.contains("open")
-  ) {
-    showDebug();
-  }
+ if(document.getElementById("debugPanel")
+ .classList.contains("open"))showDebug();
 }
 
-function maxScroll() {
-  return Math.max(0, WORLD - vw);
+function maxScroll(){
+ return Math.max(0,WORLD-vw);
 }
 
-const H = vh;
+const H=vh;
 
 /* CLOUDS */
-const cloudPositions = [
-  [0,1,120], [580,3,210], [1510,2,145],
-  [2480,5,100], [3410,4,205],
-  [4280,1,130], [5190,3,215],
-  [6180,2,120], [7130,5,190],
-  [8040,4,110], [8990,1,210],
-  [9910,3,145], [11020,2,205]
-];
-
-cloudPositions.forEach(([x,n,y],i) => {
-  image("cloud", "clouds", "clouds-0" + n, x, {
-    top: true,
-    offset: y / 900 * H,
-    height: H * (0.15 + (i % 3) * 0.025),
-    opacity: 0.72,
-    flip: i % 4 === 2
-  });
+[
+ [0,1,120],[580,3,210],[1510,2,145],
+ [2480,5,100],[3410,4,205],[4280,1,130],
+ [5190,3,215],[6180,2,120],
+ [7130,5,190],[8040,4,110],
+ [8990,1,210],[9910,3,145],
+ [11020,2,205]
+].forEach(([x,n,y],i)=>{
+ image("cloud","clouds","clouds-0"+n,x,{
+  top:true,offset:y/900*H,
+  height:H*(.15+(i%3)*.025),
+  opacity:.72,flip:i%4===2
+ });
 });
 
 /* DISTANT MOUNTAINS */
-for (let i = 0; i < 15; i++) {
-  image(
-    "far",
-    "mountains",
-    "mountains-far-0" + (i % 3 + 1),
-    i * 850 - 380,
-    {
-      offset: H * 0.37,
-      height: H * 0.48,
-      opacity: 0.74,
-      flip: i % 5 === 2
-    }
-  );
+for(let i=0;i<15;i++){
+ image("far","mountains",
+ "mountains-far-0"+(i%3+1),
+ i*850-380,{
+  offset:H*.37,height:H*.48,
+  opacity:.74,flip:i%5===2
+ });
 }
 
 /* MIDDLE MOUNTAINS */
-for (let i = 0; i < 15; i++) {
-  image(
-    "mid",
-    "mountains",
-    "mountains-mid-0" + (i % 3 + 1),
-    i * 830 - 300,
-    {
-      offset: H * 0.29,
-      height: H * 0.49,
-      opacity: 0.87,
-      flip: i % 4 === 1
-    }
-  );
+for(let i=0;i<15;i++){
+ image("mid","mountains",
+ "mountains-mid-0"+(i%3+1),
+ i*830-300,{
+  offset:H*.29,height:H*.49,
+  opacity:.87,flip:i%4===1
+ });
 }
 
 /* ROLLING HILLS */
-for (let i = 0; i < 18; i++) {
-  image(
-    "hills",
-    "hills",
-    "hills-0" + (i % 4 + 1),
-    i * 700 - 280,
-    {
-      offset: H * (0.18 + (i % 3) * 0.012),
-      height: H * (0.44 + (i % 3) * 0.025),
-      flip: i % 4 === 2
-    }
-  );
+for(let i=0;i<18;i++){
+ image("hills","hills",
+ "hills-0"+(i%4+1),
+ i*700-280,{
+  offset:H*(.18+(i%3)*.012),
+  height:H*(.44+(i%3)*.025),
+  flip:i%4===2
+ });
+}
+
+/* BUILDING LOCATIONS */
+const buildingX=[
+ 550,1580,2580,3530,4700,
+ 5830,6820,7880,9160,10650
+];
+
+function bushClear(x){
+ return buildingX.every(b=>Math.abs(x-b)>300);
 }
 
 /*
-  BUSHES: FIVE WATERCOLOR ASSETS
-  No middle trees.
-  More plain greenery than flowers.
+ BUSHES
+ Raised by the same 90px adjustment
+ that looked good in Version 7.5.
 */
 
-const buildingX = [
-  550, 1580, 2580, 3530, 4700,
-  5830, 6820, 7880, 9160, 10650
+const bushLocations=[
+ 160,310,820,1040,1210,
+ 1900,2090,2280,
+ 2890,3070,3240,
+ 3890,4050,4240,4430,
+ 5080,5270,5440,
+ 6160,6330,6510,
+ 7240,7420,7600,
+ 8240,8440,8620,8810,
+ 9650,9830,10020,
+ 11080,11270,11460,11700
 ];
 
-function bushClear(worldX) {
-  return buildingX.every(
-    x => Math.abs(worldX - x) > 300
-  );
-}
-
-const bushLocations = [
-  160, 310, 820, 1040, 1210,
-  1900, 2090, 2280,
-  2890, 3070, 3240,
-  3890, 4050, 4240, 4430,
-  5080, 5270, 5440,
-  6160, 6330, 6510,
-  7240, 7420, 7600,
-  8240, 8440, 8620, 8810,
-  9650, 9830, 10020,
-  11080, 11270, 11460, 11700
+const bushPatterns=[
+ 3,4,3,1,4,3,4,5,3,4,
+ 3,2,4,3,4,1,3,4,3,5,
+ 4,3,4,2,3,4,3,4,5,3,
+ 4,3,4,1,3
 ];
 
-const bushPatterns = [
-  3,4,3,1,4,3,4,5,3,4,
-  3,2,4,3,4,1,3,4,3,5,
-  4,3,4,2,3,4,3,4,5,3,
-  4,3,4,1,3
-];
+bushLocations.forEach((worldX,i)=>{
+ if(!bushClear(worldX))return;
 
-bushLocations.forEach((worldX, i) => {
-  if (!bushClear(worldX)) return;
+ const back=i%3!==0;
+ const layer=back?"bushesBack":"bushesFront";
+ const speed=speeds[layer];
+ const n=bushPatterns[i];
+ const scale=back
+  ? .17+(i%4)*.018
+  : .19+(i%3)*.021;
 
-  const back = i % 3 !== 0;
-  const layer = back ? "bushesBack" : "bushesFront";
-  const speed = speeds[layer];
-  const fileNumber = bushPatterns[i];
-
-  const scale = back
-    ? 0.17 + (i % 4) * 0.018
-    : 0.19 + (i % 3) * 0.021;
-
-  image(
-    layer,
-    "bushes",
-    "bushes-" + String(fileNumber).padStart(2, "0"),
-    worldX * speed,
-    {
-      offset: H * (back ? 0.13 : 0.095),
-      height: H * scale,
-      flip: i % 3 === 1,
-      opacity: back ? 0.91 : 1,
-      anchor: -50
-    }
-  );
+ image(layer,"bushes",
+ "bushes-"+String(n).padStart(2,"0"),
+ worldX*speed,{
+  offset:H*(back?.13:.095)+90,
+  height:H*scale,
+  flip:i%3===1,
+  opacity:back?.91:1,
+  anchor:-50
+ });
 });
 
-/* SMALLER FILLER SHRUBS */
-const littleShrubs = [
-  430, 950, 1990, 3170, 3990,
-  5190, 6420, 7330, 8550,
-  9750, 11380
+/* SMALL BUSHES */
+[
+ 430,950,1990,3170,3990,
+ 5190,6420,7330,8550,
+ 9750,11380
+].forEach((worldX,i)=>{
+ if(!bushClear(worldX))return;
+
+ image("bushesBack","bushes",
+ "bushes-0"+(i%2===0?4:3),
+ worldX*speeds.bushesBack,{
+  offset:H*.115+90,
+  height:H*(.125+(i%3)*.012),
+  flip:i%2===1,
+  opacity:.85,
+  anchor:-50
+ });
+});
+
+/*
+ NEW: EXTRA BUSH CLUSTERS
+
+ These soften the empty areas between
+ the original bush placements.
+ Plain green bushes are most common.
+*/
+const extraBushes=[
+  [110,4],[245,3],[365,4],
+  [910,3],[1080,4],[1270,3],
+  [1830,4],[2030,3],[2210,4],
+  [2920,3],[3120,4],
+  [3850,4],[4120,3],[4360,4],
+  [5060,3],[5320,4],[5480,3],
+  [6140,4],[6390,3],
+  [7180,3],[7440,4],
+  [8210,4],[8490,3],[8750,4],
+  [9610,3],[9900,4],
+  [11030,4],[11330,3],[11600,4]
 ];
 
-littleShrubs.forEach((worldX, i) => {
-  if (!bushClear(worldX)) return;
+extraBushes.forEach(([worldX,n],i)=>{
+ if(!bushClear(worldX))return;
 
-  image(
-    "bushesBack",
-    "bushes",
-    "bushes-0" + (i % 2 === 0 ? 4 : 3),
-    worldX * speeds.bushesBack,
-    {
-      offset: H * 0.115,
-      height: H * (0.125 + (i % 3) * 0.012),
-      flip: i % 2 === 1,
-      opacity: 0.85,
-      anchor: -50
-    }
-  );
+ image("bushesBack","bushes",
+ "bushes-0"+n,
+ worldX*speeds.bushesBack,{
+  offset:H*.115+85,
+  height:H*(.145+(i%3)*.012),
+  flip:i%2===0,
+  opacity:.94,
+  anchor:-50
+ });
 });
 
 /* TERRAIN */
-const terrain = make(
-  layers.terrain,
-  "world",
-  { width: WORLD + "px" }
+const terrain=make(
+ layers.terrain,"world",{width:WORLD+"px"}
 );
 
-const buildings = make(
-  layers.buildings,
-  "world",
-  { width: WORLD + "px" }
-);
-
-make(terrain, "ground", { width: WORLD + "px" });
-make(terrain, "path", { width: WORLD + "px" });
-make(terrain, "stream", { width: WORLD + "px" });
-
-/* TEMPORARY BUILDINGS */
-function station(title, x, garden = false, rise = 0) {
-  const s = make(buildings, "station", {
-    left: x + "px",
-    top: (79 - rise) + "%"
-  });
-
-  if (garden) {
-    make(s, "garden");
-  } else {
-    const house = make(s, "house");
-    make(s, "roof");
-    make(house, "door");
-    make(house, "window a");
-    make(house, "window b");
-  }
-
-  const label = make(s, "name");
-  label.textContent = title;
-}
-
-station("Elevated vegetable garden", 550, true, 9);
-station("Art studio", 1580);
-station("Library", 2580);
-station("Study workshop", 3530);
-station("Cloister courtyard", 4700);
-station("Marian grotto", 5830, true, 3);
-station("Kitchen", 6820);
-station("Refectory", 7880);
-station("Tree chapel", 9160);
-station("Marketplace", 10650);
-
-make(buildings, "wheel", { left: "790px" });
-
-/* FOREGROUND FLOWERS */
-const flowerGroups = [
-  [50,1,.34], [380,3,.27], [810,2,.38],
-  [1310,4,.26], [1860,5,.31],
-  [2410,6,.25], [2790,7,.36],
-  [3340,8,.27], [3900,9,.33],
-  [4440,10,.29], [4990,1,.31],
-  [5570,3,.38], [6020,5,.25],
-  [6560,7,.34], [7120,2,.29],
-  [7690,8,.36], [8230,6,.26],
-  [8790,9,.34], [9400,4,.29],
-  [9970,10,.36], [10600,1,.32],
-  [11200,5,.39], [11800,7,.28]
-];
-
-flowerGroups.forEach(([x,n,scale],i) => {
-  image(
-    "flowers",
-    "foreground",
-    "flowers-" + String(n).padStart(2, "0"),
-    x,
-    {
-      offset: -H * 0.065,
-      height: H * scale,
-      flip: i % 3 === 1
-    }
-  );
-});
+make(terrain,"ground",{width:WORLD+"px"});
+make(terrain,"path",{width:WORLD+"px"});
+make(terrain,"stream",{width:WORLD+"px"});
 
 /*
-  ONLY TWO GIANT TREES
-  First screen: left.
-  Last screen: right.
+ NEW GRASS LAYER 1
+
+ Long meadow borders behind the buildings.
+ Overlap deliberately to avoid bare strips.
 */
+const grassPattern=[3,1,4,3,2,3,1,5,4,3];
 
-image(
-  "trunks",
-  "foreground",
-  "trunk-01",
-  -H * 0.30,
-  {
-    offset: -H * 0.15,
-    height: H * 1.75,
-    flip: false,
-    anchor: -50
-  }
+for(let i=0;i<49;i++){
+ const worldX=i*245-100;
+ const n=grassPattern[i%grassPattern.length];
+
+ image("grassBack","grass",
+ "grass-0"+n,worldX,{
+  offset:H*.105,
+  height:H*(.155+(i%4)*.012),
+  flip:i%3===1,
+  opacity:.97,
+  anchor:-50
+ });
+}
+
+/* BUILDINGS */
+const buildings=make(
+ layers.buildings,"world",{width:WORLD+"px"}
 );
 
-image(
-  "trunks",
-  "foreground",
-  "trunk-03",
-  maxScroll() * speeds.trunks + vw - H * 0.40,
-  {
-    offset: -H * 0.15,
-    height: H * 1.75,
-    flip: true,
-    anchor: -50
-  }
-);
+function station(title,x,garden=false,rise=0){
+ const s=make(buildings,"station",{
+  left:x+"px",top:(79-rise)+"%"
+ });
 
-/* SPARSE OVERHEAD BRANCHES */
-const canopy = [
-  { x: 2200, n: 1, h: .53, flip: false },
-  { x: 6220, n: 4, h: .56, flip: true },
-  { x: 10100, n: 2, h: .55, flip: true }
+ if(garden){
+  make(s,"garden");
+ }else{
+  const house=make(s,"house");
+  make(s,"roof");
+  make(house,"door");
+  make(house,"window a");
+  make(house,"window b");
+ }
+
+ const label=make(s,"name");
+ label.textContent=title;
+}
+
+station("Elevated vegetable garden",550,true,9);
+station("Art studio",1580);
+station("Library",2580);
+station("Study workshop",3530);
+station("Cloister courtyard",4700);
+station("Marian grotto",5830,true,3);
+station("Kitchen",6820);
+station("Refectory",7880);
+station("Tree chapel",9160);
+station("Marketplace",10650);
+
+make(buildings,"wheel",{left:"790px"});
+
+/*
+ NEW GRASS LAYER 2
+
+ Smaller tufts in front of the ground,
+ but below the buildings' main features.
+*/
+const frontPattern=[1,3,4,3,5,3,2,4];
+
+for(let i=0;i<52;i++){
+ const worldX=i*230+60;
+ const n=frontPattern[i%frontPattern.length];
+
+ image("grassFront","grass",
+ "grass-0"+n,
+ worldX*speeds.grassFront,{
+  offset:H*.015,
+  height:H*(.105+(i%4)*.012),
+  flip:i%2===1,
+  opacity:.94,
+  anchor:-50
+ });
+}
+
+/* FOREGROUND FLOWERS */
+const flowerGroups=[
+ [50,1,.34],[380,3,.27],[810,2,.38],
+ [1310,4,.26],[1860,5,.31],
+ [2410,6,.25],[2790,7,.36],
+ [3340,8,.27],[3900,9,.33],
+ [4440,10,.29],[4990,1,.31],
+ [5570,3,.38],[6020,5,.25],
+ [6560,7,.34],[7120,2,.29],
+ [7690,8,.36],[8230,6,.26],
+ [8790,9,.34],[9400,4,.29],
+ [9970,10,.36],[10600,1,.32],
+ [11200,5,.39],[11800,7,.28]
 ];
 
-canopy.forEach((t,i) => {
-  image(
-    "branches",
-    "foreground",
-    "branches-0" + t.n,
-    t.x,
-    {
-      top: true,
-      offset: -H * (0.20 + (i % 2) * 0.04),
-      height: H * t.h,
-      flip: t.flip
-    }
-  );
+flowerGroups.forEach(([x,n,scale],i)=>{
+ image("flowers","foreground",
+ "flowers-"+String(n).padStart(2,"0"),
+ x,{
+  offset:-H*.065,
+  height:H*scale,
+  flip:i%3===1
+ });
 });
 
-/* SCROLL ENGINE */
-function move(dx) {
-  target = Math.max(
-    0,
-    Math.min(maxScroll(), target + dx)
-  );
+/* TWO FRAMING TREES */
+image("trunks","foreground","trunk-01",
+ -H*.30,{
+  offset:-H*.15,
+  height:H*1.75,
+  flip:false,
+  anchor:-50
+ });
+
+image("trunks","foreground","trunk-03",
+ maxScroll()*speeds.trunks+vw-H*.40,{
+  offset:-H*.15,
+  height:H*1.75,
+  flip:true,
+  anchor:-50
+ });
+
+/* SPARSE CANOPY */
+[
+ {x:2200,n:1,h:.53,flip:false},
+ {x:6220,n:4,h:.56,flip:true},
+ {x:10100,n:2,h:.55,flip:true}
+].forEach((t,i)=>{
+ image("branches","foreground",
+ "branches-0"+t.n,t.x,{
+  top:true,
+  offset:-H*(.20+(i%2)*.04),
+  height:H*t.h,
+  flip:t.flip
+ });
+});
+
+/* SCROLL */
+function move(dx){
+ target=Math.max(0,Math.min(maxScroll(),target+dx));
 }
 
-function animate() {
-  position += (target - position) * 0.15;
+function animate(){
+ position+=(target-position)*.15;
+ if(Math.abs(target-position)<.1)position=target;
 
-  if (Math.abs(target - position) < 0.1) {
-    position = target;
-  }
+ for(const [name,speed] of Object.entries(speeds)){
+  layers[name].style.transform=
+  "translate3d("+(-position*speed)+"px,0,0)";
+ }
 
-  for (const [name, speed] of Object.entries(speeds)) {
-    layers[name].style.transform =
-      "translate3d(" + (-position * speed) + "px,0,0)";
-  }
+ bar.style.width=
+ (maxScroll()?position/maxScroll()*100:0)+"%";
 
-  bar.style.width =
-    (maxScroll() ? position / maxScroll() * 100 : 0) + "%";
-
-  requestAnimationFrame(animate);
+ requestAnimationFrame(animate);
 }
-
 requestAnimationFrame(animate);
 
-/* TOUCH AND MOUSE */
-view.addEventListener("pointerdown", e => {
-  dragging = true;
-  lastX = e.clientX;
-  view.classList.add("dragging");
-  view.setPointerCapture(e.pointerId);
+/* POINTER CONTROLS */
+view.addEventListener("pointerdown",e=>{
+ dragging=true;
+ lastX=e.clientX;
+ view.classList.add("dragging");
+ view.setPointerCapture(e.pointerId);
 });
 
-view.addEventListener("pointermove", e => {
-  if (!dragging) return;
-  move((lastX - e.clientX) * 1.4);
-  lastX = e.clientX;
+view.addEventListener("pointermove",e=>{
+ if(!dragging)return;
+ move((lastX-e.clientX)*1.4);
+ lastX=e.clientX;
 });
 
-function release() {
-  dragging = false;
-  view.classList.remove("dragging");
+function release(){
+ dragging=false;
+ view.classList.remove("dragging");
 }
 
-view.addEventListener("pointerup", release);
-view.addEventListener("pointercancel", release);
+view.addEventListener("pointerup",release);
+view.addEventListener("pointercancel",release);
 
-view.addEventListener("wheel", e => {
-  e.preventDefault();
+view.addEventListener("wheel",e=>{
+ e.preventDefault();
+ move((Math.abs(e.deltaX)>Math.abs(e.deltaY)
+ ?e.deltaX:e.deltaY)*1.3);
+},{passive:false});
 
-  move(
-    (Math.abs(e.deltaX) > Math.abs(e.deltaY)
-      ? e.deltaX
-      : e.deltaY) * 1.3
-  );
-}, { passive: false });
-
-document.getElementById("left").onclick =
-  () => move(-vw * 0.8);
-
-document.getElementById("right").onclick =
-  () => move(vw * 0.8);
+document.getElementById("left").onclick=
+ ()=>move(-vw*.8);
+document.getElementById("right").onclick=
+ ()=>move(vw*.8);
 
 /* LABELS */
-let labelsVisible = true;
+let labelsVisible=true;
 
-document.getElementById("labels").onclick = () => {
-  labelsVisible = !labelsVisible;
-
-  document.querySelectorAll(".name").forEach(el => {
-    el.classList.toggle("hide", !labelsVisible);
-  });
-
-  document.getElementById("labels").textContent =
-    labelsVisible ? "Hide labels" : "Show labels";
+document.getElementById("labels").onclick=()=>{
+ labelsVisible=!labelsVisible;
+ document.querySelectorAll(".name").forEach(el=>{
+  el.classList.toggle("hide",!labelsVisible);
+ });
+ document.getElementById("labels").textContent=
+ labelsVisible?"Hide labels":"Show labels";
 };
 
 /* IMAGE DEBUGGER */
-function report() {
-  return [
-    "Aquinas Bub Version 7.5",
-    "Loaded placements: " + loaded,
-    "Failed placements: " + failed,
-    "Still checking: " + pending,
-    "Unique files loaded: " + successful.size,
-    "Unique missing paths: " + missing.size,
-    "",
-    "MISSING FILES:",
-    ...([...missing]
-      .sort((a,b) => a[0].localeCompare(b[0]))
-      .map(([path,count]) =>
-        path + ".PNG (" + count + " placements)"
-      ))
-  ].join("\n");
+function report(){
+ return [
+  "Aquinas Bub Version 8",
+  "Loaded placements: "+loaded,
+  "Failed placements: "+failed,
+  "Still checking: "+pending,
+  "Unique files loaded: "+successful.size,
+  "Unique missing paths: "+missing.size,
+  "",
+  "MISSING FILES:",
+  ...([...missing].sort((a,b)=>
+   a[0].localeCompare(b[0])
+  ).map(([path,count])=>
+   path+".PNG ("+count+" placements)"
+  ))
+ ].join("\n");
 }
 
-function showDebug() {
-  document.getElementById("debugText").textContent =
-    report();
+function showDebug(){
+ document.getElementById("debugText").textContent=report();
 }
 
-document.getElementById("debugBtn").onclick = () => {
-  document.getElementById("debugPanel")
-    .classList.add("open");
-  showDebug();
+document.getElementById("debugBtn").onclick=()=>{
+ document.getElementById("debugPanel").classList.add("open");
+ showDebug();
 };
 
-document.getElementById("closeDebug").onclick = () => {
-  document.getElementById("debugPanel")
-    .classList.remove("open");
+document.getElementById("closeDebug").onclick=()=>{
+ document.getElementById("debugPanel").classList.remove("open");
 };
 
-document.getElementById("copyDebug").onclick = () => {
-  const text = report();
-
-  if (navigator.clipboard?.writeText) {
-    navigator.clipboard.writeText(text)
-      .catch(() => prompt("Copy report:", text));
-  } else {
-    prompt("Copy report:", text);
-  }
+document.getElementById("copyDebug").onclick=()=>{
+ const t=report();
+ if(navigator.clipboard?.writeText){
+  navigator.clipboard.writeText(t)
+  .catch(()=>prompt("Copy report:",t));
+ }else{
+  prompt("Copy report:",t);
+ }
 };
 
-/* KEYBOARD */
-document.addEventListener("keydown", e => {
-  if (e.key === "ArrowRight") move(300);
-  if (e.key === "ArrowLeft") move(-300);
+document.addEventListener("keydown",e=>{
+ if(e.key==="ArrowRight")move(300);
+ if(e.key==="ArrowLeft")move(-300);
 });
 
-/* RESIZE */
-addEventListener("resize", () => {
-  vw = innerWidth;
-  vh = innerHeight;
-  target = Math.min(target, maxScroll());
+addEventListener("resize",()=>{
+ vw=innerWidth;
+ vh=innerHeight;
+ target=Math.min(target,maxScroll());
 });
 
 updateStatus();
 
 })();
 </script>
-
 </body>
 </html>
