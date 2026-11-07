@@ -8,16 +8,19 @@
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
 
-<title>Aquinas Bub's Monastery | Version 8</title>
+<title>Aquinas Bub's Monastery | Version 8.5</title>
 
 <style>
 *{box-sizing:border-box}
+
 html,body{
  margin:0;width:100%;height:100%;
  overflow:hidden;background:#a6daf0;
  font-family:Georgia,serif
 }
+
 button{cursor:pointer}
+
 #view{
  position:fixed;inset:0;overflow:hidden;
  touch-action:none;cursor:grab;user-select:none;
@@ -25,24 +28,27 @@ button{cursor:pointer}
  #7fc8ee 0%,#c5e9f5 56%,#f5efd4 100%)
 }
 #view.dragging{cursor:grabbing}
+
 .layer{
  position:absolute;inset:0;
  pointer-events:none;overflow:visible;
  will-change:transform
 }
+
 .art{
  position:absolute;display:block;
- max-width:none;width:auto;object-fit:contain;
- pointer-events:none;
+ max-width:none;width:auto;
+ object-fit:contain;pointer-events:none;
  transform-origin:center bottom
 }
 .art.top{transform-origin:center top}
+
 .world{
  position:absolute;top:0;left:0;
  height:100%;pointer-events:none
 }
 
-/* WATERCOLOUR GROUND */
+/* LANDSCAPE */
 .ground{
  position:absolute;top:78%;height:30%;
  background:linear-gradient(
@@ -55,7 +61,7 @@ button{cursor:pointer}
  100% 100%,0 100%)
 }
 
-/* SOFTER GARDEN PATH */
+/* GARDEN PATH */
 .path{
  position:absolute;
  top:85%;height:6%;
@@ -82,7 +88,6 @@ button{cursor:pointer}
  transparent 155px 270px)
 }
 
-/* STREAM */
 .stream{
  position:absolute;top:96%;height:14%;
  background:linear-gradient(#c2e8e6,#75bcca);
@@ -96,7 +101,7 @@ button{cursor:pointer}
  transparent 106px 200px)
 }
 
-/* TEMPORARY BUILDINGS */
+/* BUILDING PLACEHOLDERS */
 .station{
  position:absolute;width:220px;height:175px;
  transform:translate(-50%,-100%);
@@ -235,7 +240,7 @@ button{cursor:pointer}
 
 <div class="hud">
  <strong>✦ Aquinas Bub's Monastery</strong>
- <small>Version 8 · The Living Meadow</small>
+ <small>Version 8.5 · The Connected Meadow</small>
  <small id="status">Loading artwork…</small>
 </div>
 
@@ -277,6 +282,12 @@ let loaded=0,failed=0,pending=0;
 const missing=new Map();
 const successful=new Set();
 
+/*
+ Version 8.5:
+ Additional grassBridge layer connects
+ raised bushes to lower meadow.
+*/
+
 const speeds={
  cloud:.08,
  far:.18,
@@ -285,7 +296,9 @@ const speeds={
  bushesBack:.88,
  bushesFront:.96,
  terrain:1,
+ grassBridge:1,
  grassBack:1,
+ pathLayer:1,
  buildings:1,
  grassFront:1.055,
  flowers:1.17,
@@ -438,12 +451,7 @@ function bushClear(x){
  return buildingX.every(b=>Math.abs(x-b)>300);
 }
 
-/*
- BUSHES
- Raised by the same 90px adjustment
- that looked good in Version 7.5.
-*/
-
+/* BUSHES: SAME HEIGHT AS VERSION 8 */
 const bushLocations=[
  160,310,820,1040,1210,
  1900,2090,2280,
@@ -505,25 +513,19 @@ bushLocations.forEach((worldX,i)=>{
  });
 });
 
-/*
- NEW: EXTRA BUSH CLUSTERS
-
- These soften the empty areas between
- the original bush placements.
- Plain green bushes are most common.
-*/
+/* EXTRA BUSH CLUSTERS */
 const extraBushes=[
-  [110,4],[245,3],[365,4],
-  [910,3],[1080,4],[1270,3],
-  [1830,4],[2030,3],[2210,4],
-  [2920,3],[3120,4],
-  [3850,4],[4120,3],[4360,4],
-  [5060,3],[5320,4],[5480,3],
-  [6140,4],[6390,3],
-  [7180,3],[7440,4],
-  [8210,4],[8490,3],[8750,4],
-  [9610,3],[9900,4],
-  [11030,4],[11330,3],[11600,4]
+ [110,4],[245,3],[365,4],
+ [910,3],[1080,4],[1270,3],
+ [1830,4],[2030,3],[2210,4],
+ [2920,3],[3120,4],
+ [3850,4],[4120,3],[4360,4],
+ [5060,3],[5320,4],[5480,3],
+ [6140,4],[6390,3],
+ [7180,3],[7440,4],
+ [8210,4],[8490,3],[8750,4],
+ [9610,3],[9900,4],
+ [11030,4],[11330,3],[11600,4]
 ];
 
 extraBushes.forEach(([worldX,n],i)=>{
@@ -544,36 +546,76 @@ extraBushes.forEach(([worldX,n],i)=>{
 const terrain=make(
  layers.terrain,"world",{width:WORLD+"px"}
 );
-
 make(terrain,"ground",{width:WORLD+"px"});
-make(terrain,"path",{width:WORLD+"px"});
 make(terrain,"stream",{width:WORLD+"px"});
 
 /*
- NEW GRASS LAYER 1
+ NEW GRASS BRIDGE
 
- Long meadow borders behind the buildings.
- Overlap deliberately to avoid bare strips.
+ Positioned between the bushes and
+ original meadow grass.
+
+ Taller, denser, and irregularly
+ overlapped to cover the pale strip.
 */
-const grassPattern=[3,1,4,3,2,3,1,5,4,3];
+const bridgePattern=[
+ 3,4,1,3,4,3,2,4,3,5,3,4
+];
 
-for(let i=0;i<49;i++){
- const worldX=i*245-100;
- const n=grassPattern[i%grassPattern.length];
+for(let i=0;i<64;i++){
+ const worldX=i*190-100;
+ const n=bridgePattern[i%bridgePattern.length];
 
- image("grassBack","grass",
+ image("grassBridge","grass",
  "grass-0"+n,worldX,{
-  offset:H*.105,
-  height:H*(.155+(i%4)*.012),
+  offset:H*.145+25+(i%3)*7,
+  height:H*(.19+(i%4)*.013),
   flip:i%3===1,
   opacity:.97,
   anchor:-50
  });
 }
 
+/*
+ REAR MEADOW
+
+ Raised 45 pixels from Version 8.
+ This connects the grasses more
+ closely to the bridge layer.
+*/
+const grassPattern=[3,1,4,3,2,3,1,5,4,3];
+
+for(let i=0;i<55;i++){
+ const worldX=i*225-100;
+ const n=grassPattern[i%grassPattern.length];
+
+ image("grassBack","grass",
+ "grass-0"+n,worldX,{
+  offset:H*.105+45,
+  height:H*(.16+(i%4)*.012),
+  flip:i%3===1,
+  opacity:.98,
+  anchor:-50
+ });
+}
+
+/*
+ PATH OVERLAY
+
+ Keeping the path above the rear
+ grass stops it from disappearing
+ beneath the new vegetation.
+*/
+const pathWorld=make(
+ layers.pathLayer,"world",
+ {width:WORLD+"px"}
+);
+make(pathWorld,"path",{width:WORLD+"px"});
+
 /* BUILDINGS */
 const buildings=make(
- layers.buildings,"world",{width:WORLD+"px"}
+ layers.buildings,"world",
+ {width:WORLD+"px"}
 );
 
 function station(title,x,garden=false,rise=0){
@@ -608,12 +650,7 @@ station("Marketplace",10650);
 
 make(buildings,"wheel",{left:"790px"});
 
-/*
- NEW GRASS LAYER 2
-
- Smaller tufts in front of the ground,
- but below the buildings' main features.
-*/
+/* LOWER FOREGROUND GRASS */
 const frontPattern=[1,3,4,3,5,3,2,4];
 
 for(let i=0;i<52;i++){
@@ -688,7 +725,7 @@ image("trunks","foreground","trunk-03",
  });
 });
 
-/* SCROLL */
+/* SCROLL ENGINE */
 function move(dx){
  target=Math.max(0,Math.min(maxScroll(),target+dx));
 }
@@ -709,7 +746,7 @@ function animate(){
 }
 requestAnimationFrame(animate);
 
-/* POINTER CONTROLS */
+/* TOUCH AND MOUSE */
 view.addEventListener("pointerdown",e=>{
  dragging=true;
  lastX=e.clientX;
@@ -727,7 +764,6 @@ function release(){
  dragging=false;
  view.classList.remove("dragging");
 }
-
 view.addEventListener("pointerup",release);
 view.addEventListener("pointercancel",release);
 
@@ -757,7 +793,7 @@ document.getElementById("labels").onclick=()=>{
 /* IMAGE DEBUGGER */
 function report(){
  return [
-  "Aquinas Bub Version 8",
+  "Aquinas Bub Version 8.5",
   "Loaded placements: "+loaded,
   "Failed placements: "+failed,
   "Still checking: "+pending,
